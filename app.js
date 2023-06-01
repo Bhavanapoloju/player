@@ -98,7 +98,7 @@ app.get("/matches/:matchId/", async (request, response) => {
         match_details 
     WHERE 
         match_id = ${matchId};`;
-  const matchDetails = await database.all(matchDetailsQuery);
+  const matchDetails = await database.get(matchDetailsQuery);
   response.send(
       convertMatchDbObjectToResponseObject(matchDetails)
     )
@@ -129,11 +129,10 @@ app.get("/matches/:matchId/players/", async (request, response) => {
 
     const getPlayerMatchQuery = ` 
     SELECT 
-        player_details.player_id AS playerId, 
-        player_details.player_name AS playerName
+      *
     FROM 
-        player_match_score NATURAL JOIN player_details 
-
+        player_match_score 
+        NATURAL JOIN player_details 
     WHERE 
         match_id = ${matchId};`;
     const playersArray = await database.all(getPlayerMatchQuery);
@@ -156,7 +155,7 @@ app.get("/players/:playerId/playerScores/", async (request, response) => {
             SUM(sixes) AS totalSixes, 
         FROM 
             player_match_score 
-        NATURAL JOIN player_details 
+            NATURAL JOIN player_details 
         WHERE 
             player_id = ${playerId};`;
   const playerMatchDetails = await database.get(getMatchPlayersQuery);
